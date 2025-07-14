@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926415037859",
+    "project_id": "praise-to-god",
+    "storage_bucket": "praise-to-god.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926415037859:android:4d72f03634911ad0072616",
+        "android_client_info": {
+          "package_name": "com.example.praise_to_god"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc9joiegWr_aswP_RlldMY5bU22aTuxdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
