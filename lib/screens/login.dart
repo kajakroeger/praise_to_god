@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../flavor_config.dart';
+
+final flavor = FlavorConfig.instance.flavor;
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -16,6 +19,17 @@ class LoginScreen extends StatelessWidget {
                   radius: 40,
                   backgroundImage: AssetImage('assets/logo-platzhalter.jpg'),
                 ),
+
+                // Umgebungshinweis nur in dev
+                if (flavor == Flavor.dev)
+                  const Text(
+                    'PraiseToGod (dev)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
                 const SizedBox(height: 24),
                 const Text(

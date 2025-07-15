@@ -1,14 +1,19 @@
+// lib/main_dev.dart
 import 'main.dart';
 import 'flavor_config.dart';
 import 'package:flutter/material.dart';
 
+import 'main.dart';
+import 'flavor_config.dart';
+
 void main() {
   mainCommon(
-    const FlavorConfig(
-      name: "PraiseToGod (Dev)",
+    FlavorConfig(
+      name: "PraiseToGod (dev)",
+      flavor: Flavor.dev,
+      baseUrl: "",
       color: Colors.orange,
-      environment: Environment.dev,
-      baseUrl: '',
+      showBanner: true,
     ),
   );
 }

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'flavor_config.dart';
 import 'screens/login.dart';
+import 'logger.dart';
 
 void mainCommon(FlavorConfig config) {
+  if (config.flavor == Flavor.dev) {
+    logger.i('🚀 App gestartet mit Flavor: ${config.flavor}');
+  }
   runApp(MyApp(config: config));
 }
 
@@ -15,8 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: config.name,
-      theme: ThemeData(primarySwatch: Colors.deepPurple, useMaterial3: true),
-      home: const LoginScreen(),
+      theme: ThemeData(primarySwatch: config.color, useMaterial3: true),
+      home: Stack(children: [const LoginScreen()]),
       debugShowCheckedModeBanner: false,
     );
   }
