@@ -7,12 +7,25 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1071232002847:android:457da505a997f3a4ca1e2a",
+        "mobilesdk_app_id": "1:1071232002847:android:bab10d0b0311ae16ca1e2a",
         "android_client_info": {
           "package_name": "com.praisetogod.app.dev"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1071232002847-0d15llfco74c1gm054bn4s74ajp1am7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.praisetogod.app.dev",
+            "certificate_hash": "745f0211f2ab214bb54449e4db055753bf4d7ac4"
+          }
+        },
+        {
+          "client_id": "1071232002847-1vh9ti8foo4kn0n1pfpb83mpfpl62er6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCkT-C-Wmh1DHQF2lEYyOZf_Ktf9kenSFQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1071232002847-1vh9ti8foo4kn0n1pfpb83mpfpl62er6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

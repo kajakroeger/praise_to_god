@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../flavor_config.dart';
+import '../services/auth_service.dart';
 
 final flavor = FlavorConfig.instance.flavor;
 
@@ -73,11 +74,22 @@ class LoginScreen extends StatelessWidget {
                 ),
 
                 const Divider(height: 32),
+
                 ElevatedButton.icon(
-                  key: Key('google_login_button'),
+                  key: const Key('google_login_button'),
                   icon: const Icon(Icons.login),
                   label: const Text('Anmelden mit Google'),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final authService = AuthService();
+                    final userCredential = await authService.signInWithGoogle();
+                    if (userCredential != null) {
+                      // ✅ Erfolgreich angemeldet → Navigieren oder anzeigen
+                      print("Angemeldet: ${userCredential.user?.email}");
+                    } else {
+                      // ❌ Anmeldung fehlgeschlagen oder abgebrochen
+                      print("Anmeldung fehlgeschlagen");
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
