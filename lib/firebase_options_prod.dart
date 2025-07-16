@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options.dart';
+/// import 'firebase_options_prod.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,9 +28,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,18 +49,9 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDEqSiXA4Lh-dkWIKN_YiHEQ58FWAczu4Q',
-    appId: '1:926415037859:web:0c296c42187202bb072616',
-    messagingSenderId: '926415037859',
-    projectId: 'praise-to-god',
-    authDomain: 'praise-to-god.firebaseapp.com',
-    storageBucket: 'praise-to-god.firebasestorage.app',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCc9joiegWr_aswP_RlldMY5bU22aTuxdc',
-    appId: '1:926415037859:android:4d72f03634911ad0072616',
+    appId: '1:926415037859:android:a235311ef6294503072616',
     messagingSenderId: '926415037859',
     projectId: 'praise-to-god',
     storageBucket: 'praise-to-god.firebasestorage.app',
@@ -59,28 +59,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCKOuXKILnG20ugyJOqRHQgkqzW0BPIqLI',
-    appId: '1:926415037859:ios:3b85a240c0ea9784072616',
+    appId: '1:926415037859:ios:22712542afee6452072616',
     messagingSenderId: '926415037859',
     projectId: 'praise-to-god',
     storageBucket: 'praise-to-god.firebasestorage.app',
+    androidClientId: '926415037859-p109gv817623ishd16lrb6acksd94n2s.apps.googleusercontent.com',
+    iosClientId: '926415037859-fkggp2i27o1br1k0o5qi1et7ga6jquf9.apps.googleusercontent.com',
     iosBundleId: 'com.example.praiseToGod',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCKOuXKILnG20ugyJOqRHQgkqzW0BPIqLI',
-    appId: '1:926415037859:ios:3b85a240c0ea9784072616',
-    messagingSenderId: '926415037859',
-    projectId: 'praise-to-god',
-    storageBucket: 'praise-to-god.firebasestorage.app',
-    iosBundleId: 'com.example.praiseToGod',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDEqSiXA4Lh-dkWIKN_YiHEQ58FWAczu4Q',
-    appId: '1:926415037859:web:862bd88c954e9c8d072616',
-    messagingSenderId: '926415037859',
-    projectId: 'praise-to-god',
-    authDomain: 'praise-to-god.firebaseapp.com',
-    storageBucket: 'praise-to-god.firebasestorage.app',
   );
 }

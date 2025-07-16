@@ -1,3 +1,5 @@
+// Dieser Test prüft die gesamte Logik innerhalb signInWithGoogle(), aber ohne echte Firebase- oder Google-Services – alles wird gemockt.
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:praise_to_god/services/auth_service.dart';
