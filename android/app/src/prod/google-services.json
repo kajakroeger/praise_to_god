@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "926415037859",
+    "project_id": "praise-to-god",
+    "storage_bucket": "praise-to-god.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926415037859:android:4d72f03634911ad0072616",
+        "android_client_info": {
+          "package_name": "com.example.glory_to_god"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc9joiegWr_aswP_RlldMY5bU22aTuxdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "926415037859-n51k5qsl0i1ls308cv37gch08jt23h82.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gloryToGod"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926415037859:android:a235311ef6294503072616",
+        "android_client_info": {
+          "package_name": "com.praisetogod.app.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "926415037859-p109gv817623ishd16lrb6acksd94n2s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.praisetogod.app.prod",
+            "certificate_hash": "745f0211f2ab214bb54449e4db055753bf4d7ac4"
+          }
+        },
+        {
+          "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc9joiegWr_aswP_RlldMY5bU22aTuxdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "926415037859-n51k5qsl0i1ls308cv37gch08jt23h82.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gloryToGod"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

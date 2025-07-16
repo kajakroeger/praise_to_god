@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.11.1") // oder passende Version
+        classpath("com.google.gms:google-services:4.4.3") // wichtig für Firebase
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -19,3 +30,5 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+
