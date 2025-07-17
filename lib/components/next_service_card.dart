@@ -1,39 +1,75 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NextServiceCard extends StatelessWidget {
   final String? serviceName;
-  final String? startTime;
-  final List<Map<String, dynamic>>? members;
+  final Timestamp? startTime;
+  final List<Map<String, dynamic>>? users;
 
   const NextServiceCard({
     super.key,
     this.serviceName,
     this.startTime,
-    this.members,
+    this.users,
   });
 
-  Future<Map<String, dynamic>?> _fetchNextService() async {
+  String _formatDate(Timestamp timestamp) {
+    final date = timestamp.toDate();
+    final formatter = DateFormat('EEEE, dd.MM', 'de_DE');
+    return formatter.format(date);
+  }
+
+  String _formatTime(Timestamp timestamp) {
+    final date = timestamp.toDate();
+    final formatter = DateFormat.Hm('de_DE');
+    return formatter.format(date);
+  }
+
+  Future<Map<String, dynamic>?> _fetchNextServiceWithUsers() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('services')
-        .orderBy('startTime')
+        .orderBy('start') // sicherstellen, dass 'start' korrekt ist
         .limit(1)
         .get();
 
     if (snapshot.docs.isEmpty) return null;
-    return snapshot.docs.first.data();
+
+    final serviceDoc = snapshot.docs.first;
+    final serviceData = serviceDoc.data();
+
+    final List<dynamic> userRefs = serviceData['users'] ?? [];
+
+    final List<Map<String, dynamic>> loadedUsers = await Future.wait(
+      userRefs.map((ref) async {
+        try {
+          final userDoc = await (ref as DocumentReference).get();
+          final userData = userDoc.data() as Map<String, dynamic>;
+          return {
+            'name': userData['first_name'] ?? 'Unbekannt',
+            'avatar': userData['avatar'] ?? '',
+          };
+        } catch (e) {
+          return {'name': 'Unbekannt', 'avatar': ''};
+        }
+      }),
+    );
+
+    return {
+      'serviceName': serviceData['serviceName'],
+      'startTime': serviceData['start'] as Timestamp,
+      'users': loadedUsers,
+    };
   }
 
   @override
   Widget build(BuildContext context) {
-    // Wenn Testdaten übergeben wurden, direkt verwenden
-    if (serviceName != null && startTime != null && members != null) {
-      return _buildCard(serviceName!, startTime!, members!);
+    if (serviceName != null && startTime != null && users != null) {
+      return _buildCard(serviceName!, startTime!, users!);
     }
 
-    // Sonst Firestore-Daten laden
     return FutureBuilder<Map<String, dynamic>?>(
-      future: _fetchNextService(),
+      future: _fetchNextServiceWithUsers(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -45,8 +81,8 @@ class NextServiceCard extends StatelessWidget {
         final data = snapshot.data!;
         return _buildCard(
           data['serviceName'] ?? '',
-          data['startTime'] ?? '',
-          List<Map<String, dynamic>>.from(data['members'] ?? []),
+          data['startTime'] as Timestamp,
+          List<Map<String, dynamic>>.from(data['users'] ?? []),
         );
       },
     );
@@ -54,49 +90,81 @@ class NextServiceCard extends StatelessWidget {
 
   Widget _buildCard(
     String serviceName,
-    String startTime,
-    List<Map<String, dynamic>> members,
+    Timestamp startTime,
+    List<Map<String, dynamic>> users,
   ) {
+    final dateStr = _formatDate(startTime); // z. B. „Sonntag, 20.07“
+    final timeStr = _formatTime(startTime); // z. B. „10:00“
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              serviceName,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Startzeit: $startTime Uhr',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: members.map((member) {
-                final name = member['name'] ?? '';
-                final imageUrl = member['profileImageUrl'] ?? '';
-
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: imageUrl.isNotEmpty
-                          ? NetworkImage(imageUrl)
-                          : const AssetImage('assets/avatar_default.png')
-                                as ImageProvider,
-                      radius: 24,
+            // 👉 Linke Spalte: Dienstname & User-Avatare
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    serviceName.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
                     ),
-                    const SizedBox(height: 4),
-                    Text(name),
-                  ],
-                );
-              }).toList(),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: users.map((user) {
+                      final name = user['name'] ?? 'Unbekannt';
+                      final avatarUrl = user['avatar'] ?? '';
+
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage: avatarUrl.isNotEmpty
+                                  ? NetworkImage(avatarUrl)
+                                  : const AssetImage(
+                                          'assets/avatar_default.png',
+                                        )
+                                        as ImageProvider,
+                              radius: 20,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(name, style: const TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+
+            // 👉 Rechte Spalte: Datum & Zeit
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    dateStr,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text('Start: $timeStr', style: const TextStyle(fontSize: 13)),
+                ],
+              ),
             ),
           ],
         ),
