@@ -1,7 +1,7 @@
 // Firestore-Abfrage
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/service.dart';
+import '../models/services.dart';
 
 class ServiceRepository {
   final _firestore = FirebaseFirestore.instance;

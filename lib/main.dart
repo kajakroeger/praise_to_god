@@ -2,7 +2,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 import 'flavor_config.dart';
 import 'logger.dart';
-import 'router.dart';
+import 'router/router.dart';
 
 void mainCommon(FlavorConfig config) {
   if (config.flavor == Flavor.dev) {

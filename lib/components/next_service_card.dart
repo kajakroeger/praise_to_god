@@ -29,7 +29,8 @@ class NextServiceCard extends StatelessWidget {
   Future<Map<String, dynamic>?> _fetchNextServiceWithUsers() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('services')
-        .orderBy('start') // sicherstellen, dass 'start' korrekt ist
+        .where('startTime', isGreaterThan: Timestamp.now())
+        .orderBy('startTime') // sicherstellen, dass 'start' korrekt ist
         .limit(1)
         .get();
 
@@ -57,7 +58,7 @@ class NextServiceCard extends StatelessWidget {
 
     return {
       'serviceName': serviceData['serviceName'],
-      'startTime': serviceData['start'] as Timestamp,
+      'startTime': serviceData['startTime'] as Timestamp,
       'users': loadedUsers,
     };
   }
