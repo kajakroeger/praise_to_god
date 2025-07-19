@@ -8,7 +8,11 @@ void main() {
   ) async {
     // Widget einbetten
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(bottomNavigationBar: BottomNavBar())),
+      const MaterialApp(
+        home: Scaffold(
+          bottomNavigationBar: BottomNavBar(currentRoute: '/dashboard'),
+        ),
+      ),
     );
 
     // Prüfen, ob alle erwarteten Labels vorhanden sind

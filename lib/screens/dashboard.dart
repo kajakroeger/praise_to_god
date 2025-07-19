@@ -75,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: const [SizedBox(height: 12), NextServiceCard()],
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(),
+      bottomNavigationBar: const BottomNavBar(currentRoute: '/dashboard'),
     );
   }
 }

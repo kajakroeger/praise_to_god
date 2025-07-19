@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/login.dart';
 import 'screens/dashboard.dart';
-import 'services/auth_gate.dart'; // ✅ Importiere das AuthGate-Widget
+import 'services/auth_gate.dart';
+import 'screens/service.dart';
 
 class MyApp extends StatelessWidget {
   final bool isTestMode;
@@ -24,19 +25,25 @@ class MyApp extends StatelessWidget {
     final router = GoRouter(
       initialLocation: '/',
       routes: [
-        // 🔐 AuthGate entscheidet über Login oder Weiterleitung
+        // AuthGate entscheidet über Login oder Weiterleitung
         GoRoute(path: '/', builder: (context, state) => const AuthGate()),
 
-        // 📋 Dashboard (geschützte Route)
+        // Dashboard (geschützte Route)
         GoRoute(
           path: '/dashboard',
           builder: (context, state) => const DashboardScreen(),
         ),
 
-        // 🔑 Login manuell erreichbar (falls nötig)
+        // Login manuell erreichbar (falls nötig)
         GoRoute(
           path: '/login',
           builder: (context, state) => const LoginScreen(),
+        ),
+
+        // Weiterleitung zum ServiceScreen
+        GoRoute(
+          path: '/service',
+          builder: (context, state) => const ServiceScreen(),
         ),
       ],
     );
