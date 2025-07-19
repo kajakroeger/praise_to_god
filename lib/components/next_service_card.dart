@@ -14,23 +14,26 @@ class NextServiceCard extends StatelessWidget {
     this.users,
   });
 
+  /// 🗓 Datum formatieren (z. B. „Sonntag, 20.07“)
   String _formatDate(Timestamp timestamp) {
     final date = timestamp.toDate();
     final formatter = DateFormat('EEEE, dd.MM', 'de_DE');
     return formatter.format(date);
   }
 
+  /// 🕑 Zeit formatieren (z. B. „10:00“)
   String _formatTime(Timestamp timestamp) {
     final date = timestamp.toDate();
     final formatter = DateFormat.Hm('de_DE');
     return formatter.format(date);
   }
 
+  /// 🔄 Dienst + Benutzer aus Firestore laden
   Future<Map<String, dynamic>?> _fetchNextServiceWithUsers() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('services')
         .where('startTime', isGreaterThan: Timestamp.now())
-        .orderBy('startTime') // sicherstellen, dass 'start' korrekt ist
+        .orderBy('startTime')
         .limit(1)
         .get();
 
@@ -65,10 +68,12 @@ class NextServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 👉 Falls Testdaten übergeben wurden
     if (serviceName != null && startTime != null && users != null) {
-      return _buildCard(serviceName!, startTime!, users!);
+      return _buildWithTitle(_buildCard(serviceName!, startTime!, users!));
     }
 
+    // 👉 Sonst: Daten aus Firestore laden
     return FutureBuilder<Map<String, dynamic>?>(
       future: _fetchNextServiceWithUsers(),
       builder: (context, snapshot) {
@@ -76,42 +81,63 @@ class NextServiceCard extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (!snapshot.hasData || snapshot.data == null) {
-          return const Text('Kein nächster Dienst gefunden');
+          return _buildWithTitle(const Text('Kein nächster Dienst gefunden'));
         }
 
         final data = snapshot.data!;
-        return _buildCard(
-          data['serviceName'] ?? '',
-          data['startTime'] as Timestamp,
-          List<Map<String, dynamic>>.from(data['users'] ?? []),
+        return _buildWithTitle(
+          _buildCard(
+            data['serviceName'] ?? '',
+            data['startTime'] as Timestamp,
+            List<Map<String, dynamic>>.from(data['users'] ?? []),
+          ),
         );
       },
     );
   }
 
+  /// 🧩 Hilfsfunktion, die die Überschrift + Card zusammen zurückgibt
+  Widget _buildWithTitle(Widget card) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Nächster Dienst',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        card,
+      ],
+    );
+  }
+
+  /// 🧾 Dienst-Karte mit Datum, Uhrzeit & Avataren
   Widget _buildCard(
     String serviceName,
     Timestamp startTime,
     List<Map<String, dynamic>> users,
   ) {
-    final dateStr = _formatDate(startTime); // z. B. „Sonntag, 20.07“
-    final timeStr = _formatTime(startTime); // z. B. „10:00“
+    final dateStr = _formatDate(startTime);
+    final timeStr = _formatTime(startTime);
 
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // 👉 Linke Spalte: Dienstname & User-Avatare
+            // 🔹 Linke Spalte: Dienstname & Benutzer
             Expanded(
               flex: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    key: const Key('serviceName'),
                     serviceName.toUpperCase(),
                     style: const TextStyle(
                       fontSize: 16,
@@ -120,28 +146,30 @@ class NextServiceCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 8,
                     children: users.map((user) {
                       final name = user['name'] ?? 'Unbekannt';
                       final avatarUrl = user['avatar'] ?? '';
 
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: avatarUrl.isNotEmpty
-                                  ? NetworkImage(avatarUrl)
-                                  : const AssetImage(
-                                          'assets/avatar_default.png',
-                                        )
-                                        as ImageProvider,
-                              radius: 20,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(name, style: const TextStyle(fontSize: 12)),
-                          ],
-                        ),
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: avatarUrl.isNotEmpty
+                                ? NetworkImage(avatarUrl)
+                                : const AssetImage('assets/avatar_default.png')
+                                      as ImageProvider,
+                            radius: 20,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            key: Key('userName_${name.toLowerCase()}'),
+                            name,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
                       );
                     }).toList(),
                   ),
@@ -149,13 +177,14 @@ class NextServiceCard extends StatelessWidget {
               ),
             ),
 
-            // 👉 Rechte Spalte: Datum & Zeit
+            // 🔹 Rechte Spalte: Datum & Zeit
             Expanded(
               flex: 2,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
+                    key: const Key('startTime'),
                     dateStr,
                     style: const TextStyle(
                       fontSize: 14,

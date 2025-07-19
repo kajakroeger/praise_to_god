@@ -13,13 +13,11 @@ class BottomNavBar extends StatelessWidget {
       unselectedItemColor: Colors.grey,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chats'),
-        BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
         BottomNavigationBarItem(
           icon: Icon(Icons.volunteer_activism),
           label: 'Dienste',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'mehr'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
       ],
     );
   }

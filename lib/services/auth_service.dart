@@ -74,4 +74,12 @@ class AuthService {
 
   /// 👤 Aktueller User
   User? get currentUser => _auth.currentUser;
+
+  // Statische Methode für Tests
+  static AuthService forTest({
+    required FirebaseAuth auth,
+    required GoogleSignIn googleSignIn,
+  }) {
+    return AuthService(auth: auth, googleSignIn: googleSignIn);
+  }
 }

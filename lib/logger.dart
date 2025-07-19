@@ -1,25 +1,13 @@
 import 'package:logger/logger.dart';
-import '../flavor_config.dart';
 
 final logger = Logger(
-  level: _getLogLevel(),
+  level: Level.debug, // Immer debuggen (du kannst später "info" draus machen)
   printer: PrettyPrinter(
     methodCount: 2,
     errorMethodCount: 5,
     lineLength: 80,
     colors: true,
     printEmojis: true,
-    printTime: false,
+    printTime: true, // Setze auf true, um Zeitstempel zu sehen
   ),
 );
-
-Level _getLogLevel() {
-  switch (FlavorConfig.instance.flavor) {
-    case Flavor.dev:
-      return Level.debug;
-    case Flavor.prod:
-      return Level.nothing; // Keine Logs in Produktion
-    default:
-      return Level.debug;
-  }
-}

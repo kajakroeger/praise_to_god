@@ -1,28 +1,18 @@
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
-import 'flavor_config.dart';
-import 'logger.dart';
-import 'router/router.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
-void mainCommon(FlavorConfig config) {
-  if (config.flavor == Flavor.dev) {
-    logger.i('🚀 App gestartet mit Flavor: ${config.flavor}');
-  }
-  runApp(MyApp(config: config));
-}
+import 'firebase_options.dart';
+import 'app.dart'; // Dein App-Widget
 
-class MyApp extends StatelessWidget {
-  final FlavorConfig config;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  const MyApp({super.key, required this.config});
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: config.name,
-      theme: ThemeData(primarySwatch: config.color, useMaterial3: true),
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter,
-    );
-  }
+  await initializeDateFormatting('de_DE');
+  Intl.defaultLocale = 'de_DE';
+
+  runApp(MyApp());
 }

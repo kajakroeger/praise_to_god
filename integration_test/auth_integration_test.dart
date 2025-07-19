@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:praise_to_god/firebase_options.dart';
 import 'package:praise_to_god/services/auth_service.dart';
-import 'package:praise_to_god/firebase_options_dev.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {

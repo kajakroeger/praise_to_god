@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.praisetogod.app" // Basis-Namespace
+    namespace = "com.praisetogod.app.dev" // Basis-Namespace
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
@@ -27,19 +27,15 @@ android {
         versionName = "1.0"
     }
 
-    // 🔀 Flavors definieren
-    flavorDimensions += "env"
-    productFlavors {
-        create("dev") {
-            dimension = "env"
-            applicationId = "com.praisetogod.app.dev"
-            versionNameSuffix = "-dev"
-        }
-        create("prod") {
-            dimension = "env"
-            applicationId = "com.praisetogod.app.prod"
-        }
-    }
+//    // 🔀 Flavors definieren
+//    flavorDimensions += "env"
+//    productFlavors {
+//        create("dev") {
+//            dimension = "env"
+//            applicationId = "com.praisetogod.app.dev"
+//            versionNameSuffix = "-dev"
+//        }
+//    }
 
     buildTypes {
         release {

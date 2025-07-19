@@ -1,31 +1,29 @@
-/// Testet, ob alle zentralen Bedienelemente des LoginScreens korrekt angezeigt werden.
-/// Dazu gehören E-Mail-Feld, Passwort-Feld sowie die Buttons für Login, Passwort vergessen und Google-Login.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:praise_to_god/screens/login.dart';
-import 'package:praise_to_god/flavor_config.dart';
+import 'package:praise_to_god/services/auth_service.dart';
+
+// 🧪 Eigener MockAuthService für Testzwecke
+class MockAuthService extends Mock implements AuthService {}
 
 void main() {
+  late MockAuthService mockAuthService;
+
   setUp(() {
-    // FlavorConfig für Tests initialisieren
-    FlavorConfig.instance = FlavorConfig(
-      name: 'Test',
-      flavor: Flavor.dev,
-      baseUrl: '',
-      color: Colors.blue,
-      showBanner: false,
-    );
+    mockAuthService = MockAuthService();
   });
 
   group('LoginScreen UI-Tests', () {
     testWidgets('zeigt E-Mail, Passwort und Login-Buttons korrekt an', (
       tester,
     ) async {
-      // Widget bauen
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      // 🏗️ LoginScreen mit gemocktem AuthService bauen
+      await tester.pumpWidget(
+        MaterialApp(home: LoginScreen(authServiceOverride: mockAuthService)),
+      );
 
-      // Erwartete UI-Elemente prüfen
+      // ✅ UI-Elemente prüfen
       expect(find.byKey(const Key('email_field')), findsOneWidget);
       expect(find.byKey(const Key('password_field')), findsOneWidget);
       expect(find.byKey(const Key('login_button')), findsOneWidget);

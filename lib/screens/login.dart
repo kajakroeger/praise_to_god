@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; // ⬅️ Für Navigation
 import 'package:praise_to_god/services/auth_service.dart';
-import '../flavor_config.dart';
-
-final flavor = FlavorConfig.instance.flavor;
 
 class LoginScreen extends StatefulWidget {
   final AuthService? authServiceOverride;
-
   const LoginScreen({super.key, this.authServiceOverride});
 
   @override
@@ -63,15 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 // ✅ Hinweis für dev-Umgebung
-                if (flavor == Flavor.dev)
-                  const Text(
-                    'PraiseToGod (dev)',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.deepPurple,
-                      fontWeight: FontWeight.bold,
-                    ),
+                const Text(
+                  'PraiseToGod (dev)',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
 
                 const SizedBox(height: 24),
                 const Text(

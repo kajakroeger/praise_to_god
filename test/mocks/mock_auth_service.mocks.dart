@@ -3,11 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i5;
 
-import 'package:firebase_auth/firebase_auth.dart' as _i4;
+import 'package:firebase_auth/firebase_auth.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:praise_to_god/services/auth_service.dart' as _i2;
+import 'package:mockito/src/dummies.dart' as _i4;
+import 'package:praise_to_god/services/auth_service.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -23,19 +24,70 @@ import 'package:praise_to_god/services/auth_service.dart' as _i2;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeUserCredential_0 extends _i1.SmartFake
+    implements _i2.UserCredential {
+  _FakeUserCredential_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i2.AuthService {
+class MockAuthService extends _i1.Mock implements _i3.AuthService {
   MockAuthService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i3.Future<_i4.UserCredential?> signInWithGoogle() =>
+  String extractFirstName(String? displayName) =>
+      (super.noSuchMethod(
+            Invocation.method(#extractFirstName, [displayName]),
+            returnValue: _i4.dummyValue<String>(
+              this,
+              Invocation.method(#extractFirstName, [displayName]),
+            ),
+          )
+          as String);
+
+  @override
+  _i5.Future<void> ensureUserDocumentExists(_i2.User? user) =>
+      (super.noSuchMethod(
+            Invocation.method(#ensureUserDocumentExists, [user]),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
+  _i5.Future<_i2.UserCredential?> signInWithGoogle() =>
       (super.noSuchMethod(
             Invocation.method(#signInWithGoogle, []),
-            returnValue: _i3.Future<_i4.UserCredential?>.value(),
+            returnValue: _i5.Future<_i2.UserCredential?>.value(),
           )
-          as _i3.Future<_i4.UserCredential?>);
+          as _i5.Future<_i2.UserCredential?>);
+
+  @override
+  _i5.Future<_i2.UserCredential> signInWithEmailPassword(
+    String? email,
+    String? password,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#signInWithEmailPassword, [email, password]),
+            returnValue: _i5.Future<_i2.UserCredential>.value(
+              _FakeUserCredential_0(
+                this,
+                Invocation.method(#signInWithEmailPassword, [email, password]),
+              ),
+            ),
+          )
+          as _i5.Future<_i2.UserCredential>);
+
+  @override
+  _i5.Future<void> signOut() =>
+      (super.noSuchMethod(
+            Invocation.method(#signOut, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
 }
