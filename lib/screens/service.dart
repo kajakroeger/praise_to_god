@@ -47,6 +47,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                   child: Text(
+                    key: Key('month'),
                     'Juli',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -57,6 +58,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                   child: Text(
+                    key: Key('month'),
                     'August',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),

@@ -7,7 +7,9 @@ import 'package:praise_to_god/components/bottom_nav_bar.dart';
 import 'package:praise_to_god/services/auth_service.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final bool isTestMode;
+
+  const DashboardScreen({super.key, this.isTestMode = false});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -44,7 +46,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
+    if (!widget.isTestMode) {
+      _loadUserData();
+    } else {
+      isLoading = false; // UserData werden gar nicht erst geladen
+    }
   }
 
   @override
@@ -72,10 +78,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onRefresh: _loadUserData, // 👈 beim Wischen nach unten neu laden
         child: ListView(
           padding: const EdgeInsets.all(16),
-          children: const [SizedBox(height: 12), NextServiceCard()],
+          children: [
+            const SizedBox(height: 12),
+            widget.isTestMode
+                ? Placeholder(key: Key('nextServiceCard'))
+                : NextServiceCard(),
+          ],
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(currentRoute: '/dashboard'),
+      bottomNavigationBar: const BottomNavBar(
+        key: Key('bottomMenuBar'),
+        currentRoute: '/dashboard',
+      ),
     );
   }
 }

@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:praise_to_god/screens/login.dart';
 import 'package:praise_to_god/services/auth_service.dart';
+import '../mocks/mock_firebase_auth.mocks.dart';
 
-// 🧪 Eigener MockAuthService für Testzwecke
 class MockAuthService extends Mock implements AuthService {}
 
 void main() {
@@ -18,12 +18,10 @@ void main() {
     testWidgets('zeigt E-Mail, Passwort und Login-Buttons korrekt an', (
       tester,
     ) async {
-      // 🏗️ LoginScreen mit gemocktem AuthService bauen
       await tester.pumpWidget(
         MaterialApp(home: LoginScreen(authServiceOverride: mockAuthService)),
       );
 
-      // ✅ UI-Elemente prüfen
       expect(find.byKey(const Key('email_field')), findsOneWidget);
       expect(find.byKey(const Key('password_field')), findsOneWidget);
       expect(find.byKey(const Key('login_button')), findsOneWidget);

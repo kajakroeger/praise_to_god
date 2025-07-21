@@ -46,7 +46,7 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(
           icon: Icon(Icons.volunteer_activism),
-          label: 'service',
+          label: 'Dienste',
         ),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
       ],

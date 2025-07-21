@@ -23,8 +23,8 @@ void main() {
   group('AuthService Integration (Firebase Dev)', () {
     test('Login mit E-Mail/Passwort (echte Firebase-Daten)', () async {
       // Testkonto, das vorher in der Firebase-Console (dev) angelegt wurde
-      const email = 'testuser@example.com';
-      const password = 'testpass123';
+      const email = 'kaja@test.com';
+      const password = 'YHWH4E';
 
       final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);

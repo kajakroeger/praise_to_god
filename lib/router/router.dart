@@ -31,7 +31,7 @@ final GoRouter appRouter = GoRouter(
 
   routes: [
     // Login-Seite
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+    GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
 
     // Dashboard nach Login
     GoRoute(

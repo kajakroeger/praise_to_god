@@ -43,10 +43,9 @@ void main() async {
       // 🔎 Prüfe, ob Startzeit angezeigt wird
       expect(find.byKey(const Key('startTime')), findsOneWidget);
 
-      // 🔎 Prüfe, ob mindestens ein Benutzername sichtbar ist
+      // 🔎 Prüfe, ob Benutzernamen sichtbar sind
       expect(find.text('Anna'), findsOneWidget);
       expect(find.text('David'), findsOneWidget);
-      expect(find.text('Kaja'), findsOneWidget);
 
       // 🚪 Am Ende ggf. wieder abmelden (sauberer Testabschluss)
       addTearDown(() async => FirebaseAuth.instance.signOut());

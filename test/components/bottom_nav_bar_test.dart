@@ -17,16 +17,12 @@ void main() {
 
     // Prüfen, ob alle erwarteten Labels vorhanden sind
     expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Chats'), findsOneWidget);
-    expect(find.text('Events'), findsOneWidget);
     expect(find.text('Dienste'), findsOneWidget);
-    expect(find.text('mehr'), findsOneWidget);
+    expect(find.text('Profil'), findsOneWidget);
 
     // Prüfen, ob alle Icons korrekt angezeigt werden
     expect(find.byIcon(Icons.home), findsOneWidget);
-    expect(find.byIcon(Icons.chat), findsOneWidget);
-    expect(find.byIcon(Icons.event), findsOneWidget);
     expect(find.byIcon(Icons.volunteer_activism), findsOneWidget);
-    expect(find.byIcon(Icons.menu), findsOneWidget);
+    expect(find.byIcon(Icons.person), findsOneWidget);
   });
 }

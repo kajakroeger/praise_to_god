@@ -35,10 +35,7 @@ class MyApp extends StatelessWidget {
         ),
 
         // Login manuell erreichbar (falls nötig)
-        GoRoute(
-          path: '/login',
-          builder: (context, state) => const LoginScreen(),
-        ),
+        GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
 
         // Weiterleitung zum ServiceScreen
         GoRoute(
