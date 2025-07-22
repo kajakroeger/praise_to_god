@@ -11,6 +11,7 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+.env
 
 # IntelliJ related
 *.iml
@@ -31,7 +32,6 @@ Generated.xconfig
 .pub-cache/
 .pub/
 /build/
-pubspec.lock
 
 # generierte Dateien (Mock-Klassen, JSON serializable etc.)
 **/*.g.dart
@@ -54,7 +54,6 @@ ios/Pods/
 ios/Flutter/Flutter.framework
 ios/Flutter/Flutter.podspec
 ios/Flutter/Generated.xcconfig
-
 
 # Firebase / GoogleService-Dateien
 android/app/google-services.json

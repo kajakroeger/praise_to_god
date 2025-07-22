@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../components/bottom_nav_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ServiceScreen extends StatefulWidget {
   const ServiceScreen({super.key});
@@ -10,8 +11,139 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  String selectedTeam = 'Technik'; // Standard-Team
-  final List<String> availableTeams = ['Technik', 'Worship', 'Welcome'];
+  String selectedTeam = 'tech'; // 🔧 Anfangs-Auswahl
+  final Map<String, String> teamLabels = {
+    'tech': 'Technik',
+    'worship': 'Worship',
+    'welcome': 'Welcome',
+    'kitchen': 'Küche',
+  };
+
+  /// 📦 Dialog zur Ein- oder Austragung
+  void _handleServiceTap(
+    BuildContext context,
+    String date,
+    String team,
+    List<dynamic> assignedRefs,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bitte melde dich zuerst an.')),
+      );
+      return;
+    }
+
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid);
+    final isAssigned = assignedRefs.any(
+      (ref) => ref is DocumentReference && ref.path == userRef.path,
+    );
+
+    if (isAssigned) {
+      // 👉 Dialog zum Austragen
+      final shouldUnassign = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Vom Dienst austragen'),
+          content: Text(
+            'Möchtest du dich wirklich vom Dienst am $date austragen?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Austragen'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldUnassign == true) {
+        final docRef = FirebaseFirestore.instance
+            .collection('events')
+            .doc('sunday_service')
+            .collection('dates')
+            .doc(date);
+
+        await docRef.update({
+          'services.$team.assigned': FieldValue.arrayRemove([userRef]),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Du wurdest ausgetragen.')),
+        );
+      }
+    } else {
+      // 👉 Dialog zum Eintragen
+      final shouldAssign = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Zum Dienst eintragen'),
+          content: Text('Möchtest du dich für den Dienst am $date eintragen?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Eintragen'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldAssign == true) {
+        final docRef = FirebaseFirestore.instance
+            .collection('events')
+            .doc('sunday_service')
+            .collection('dates')
+            .doc(date);
+
+        await docRef.update({
+          'services.$team.assigned': FieldValue.arrayUnion([userRef]),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Du wurdest eingetragen.')),
+        );
+      }
+    }
+
+    // ⏱️ Refresh der UI nach Ein-/Austragung
+    setState(() {});
+  }
+
+  /// 📅 Gibt Monatsnamen zurück
+  String _getMonthName(int month) {
+    const names = [
+      '',
+      'Januar',
+      'Februar',
+      'März',
+      'April',
+      'Mai',
+      'Juni',
+      'Juli',
+      'August',
+      'September',
+      'Oktober',
+      'November',
+      'Dezember',
+    ];
+    return names[month];
+  }
+
+  /// 🗓 Format wie „13 SO“
+  String _formatDate(DateTime date) {
+    const weekdays = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
+    return '${date.day.toString().padLeft(2, '0')} ${weekdays[date.weekday - 1]}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +151,10 @@ class _ServiceScreenState extends State<ServiceScreen> {
       appBar: AppBar(title: const Text('Dienste')),
       body: Column(
         children: [
-          // 🔽 Dropdown zur Teamauswahl
+          // 🔽 Dropdown zur Auswahl des Teams
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownButton<String>(
-              key: const Key('teamDropdown'),
               value: selectedTeam,
               isExpanded: true,
               onChanged: (value) {
@@ -33,48 +164,179 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   });
                 }
               },
-              items: availableTeams.map((team) {
-                return DropdownMenuItem<String>(value: team, child: Text(team));
+              items: teamLabels.entries.map((entry) {
+                return DropdownMenuItem<String>(
+                  value: entry.key,
+                  child: Text(entry.value),
+                );
               }).toList(),
             ),
           ),
 
-          // 📋 Liste der Dienste
+          // 🔄 Firestore-Daten laden
           Expanded(
-            child: ListView(
-              key: const Key('serviceList'),
-              children: const [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                  child: Text(
-                    key: Key('month'),
-                    'Juli',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ListTile(title: Text('13 SO')),
-                ListTile(title: Text('20 SO')),
-                ListTile(title: Text('27 SO')),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-                  child: Text(
-                    key: Key('month'),
-                    'August',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                ListTile(title: Text('03 SO')),
-                ListTile(title: Text('10 SO')),
-                ListTile(title: Text('17 SO')),
-                ListTile(title: Text('24 SO')),
-                ListTile(title: Text('31 SO')),
-              ],
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('events')
+                  .doc('sunday_service')
+                  .collection('dates')
+                  .orderBy('date')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('Keine Termine gefunden.'));
+                }
+
+                final docs = snapshot.data!.docs;
+
+                return ListView.builder(
+                  key: const Key('serviceList'),
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final data = docs[index].data() as Map<String, dynamic>;
+                    final serviceData = data['services']?[selectedTeam];
+                    if (serviceData == null) return const SizedBox.shrink();
+
+                    final date = DateTime.parse(data['date']);
+                    final startTime = serviceData['startTime'] ?? '';
+                    final assigned =
+                        serviceData['assigned'] as List<dynamic>? ?? [];
+
+                    final bool showMonthHeader =
+                        index == 0 ||
+                        date.month != DateTime.parse(docs[index - 1].id).month;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (showMonthHeader)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 8,
+                            ),
+                            child: Text(
+                              _getMonthName(date.month),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                        InkWell(
+                          onTap: () => _handleServiceTap(
+                            context,
+                            data['date'],
+                            selectedTeam,
+                            assigned,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0,
+                              vertical: 6,
+                            ),
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          _formatDate(date),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          startTime,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    if (assigned.isNotEmpty)
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 4,
+                                        children: assigned.map<Widget>((ref) {
+                                          if (ref is DocumentReference) {
+                                            return FutureBuilder<
+                                              DocumentSnapshot
+                                            >(
+                                              future: ref.get(),
+                                              builder: (context, snapshot) {
+                                                if (!snapshot.hasData ||
+                                                    !snapshot.data!.exists) {
+                                                  return const Chip(
+                                                    label: Text('Unbekannt'),
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                  );
+                                                }
+
+                                                final userData =
+                                                    snapshot.data!.data()
+                                                        as Map<String, dynamic>;
+                                                final name =
+                                                    userData['displayName'] ??
+                                                    'Unbekannt';
+                                                final avatarPath =
+                                                    userData['avatarAssetPath'] ??
+                                                    'assets/avatars/avatar_default.png';
+
+                                                return Chip(
+                                                  avatar: CircleAvatar(
+                                                    backgroundImage: AssetImage(
+                                                      avatarPath,
+                                                    ),
+                                                  ),
+                                                  label: Text(name),
+                                                  backgroundColor:
+                                                      Colors.grey.shade200,
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            return const SizedBox.shrink(); // Sicherheitsfallback
+                                          }
+                                        }).toList(),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
       ),
-
-      // 📱 BottomNavigationBar
       bottomNavigationBar: const BottomNavBar(currentRoute: '/service'),
     );
   }

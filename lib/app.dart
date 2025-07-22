@@ -6,22 +6,10 @@ import 'services/auth_gate.dart';
 import 'screens/service.dart';
 
 class MyApp extends StatelessWidget {
-  final bool isTestMode;
-
-  const MyApp({super.key, this.isTestMode = false});
+  const MyApp({super.key}); // 🔥 `isTestMode` entfernt
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Im Testmodus direkt das Dashboard anzeigen
-    if (isTestMode) {
-      return const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'PraiseToGod (Test)',
-        home: DashboardScreen(),
-      );
-    }
-
-    // ✅ GoRouter mit AuthGate als Einstieg
     final router = GoRouter(
       initialLocation: '/',
       routes: [

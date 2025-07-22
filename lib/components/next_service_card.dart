@@ -1,20 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NextServiceCard extends StatelessWidget {
-  // Diese Variable prüft automatisch, ob der Code im Test läuft
-  static const bool isTestMode = bool.fromEnvironment('FLUTTER_TEST');
-  final String? serviceName;
-  final Timestamp? startTime;
-  final List<Map<String, dynamic>>? users;
-
-  const NextServiceCard({
-    super.key,
-    this.serviceName,
-    this.startTime,
-    this.users,
-  });
+  const NextServiceCard({super.key});
 
   /// 🗓 Datum formatieren (z. B. „Sonntag, 20.07“)
   String _formatDate(Timestamp timestamp) {
@@ -30,79 +20,121 @@ class NextServiceCard extends StatelessWidget {
     return formatter.format(date);
   }
 
-  /// 🔄 Dienst + Benutzer aus Firestore laden
-  Future<Map<String, dynamic>?> _fetchNextServiceWithUsers() async {
+  /// 🔄 Dienst-Daten aus Firestore laden
+  Future<List<Map<String, dynamic>>> _fetchNextServicesFromEvents() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) return [];
+
+    final userUid = currentUser.uid;
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userUid);
+    final now = DateTime.now();
+
     final snapshot = await FirebaseFirestore.instance
-        .collection('services')
-        .where('startTime', isGreaterThan: Timestamp.now())
-        .orderBy('startTime')
-        .limit(1)
+        .collection('events')
+        .doc('sunday_service')
+        .collection('dates')
+        .orderBy('date')
         .get();
 
-    if (snapshot.docs.isEmpty) return null;
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final dateStr = data['date'] as String;
 
-    final serviceDoc = snapshot.docs.first;
-    final serviceData = serviceDoc.data();
+      final parsedDate = DateTime.tryParse(dateStr);
+      if (parsedDate == null || parsedDate.isBefore(now)) continue;
 
-    final List<dynamic> userRefs = serviceData['users'] ?? [];
+      final services = data['services'] as Map<String, dynamic>? ?? {};
+      final List<Map<String, dynamic>> matchedServices = [];
 
-    final List<Map<String, dynamic>> loadedUsers = await Future.wait(
-      userRefs.map((ref) async {
-        try {
-          final userDoc = await (ref as DocumentReference).get();
-          final userData = userDoc.data() as Map<String, dynamic>;
-          return {
-            'name': userData['first_name'] ?? 'Unbekannt',
-            'avatar': userData['avatar'] ?? '',
-          };
-        } catch (e) {
-          return {'name': 'Unbekannt', 'avatar': ''};
-        }
-      }),
-    );
+      for (final entry in services.entries) {
+        final serviceKey = entry.key;
+        final service = entry.value as Map<String, dynamic>;
+        final assigned = service['assigned'] as List<dynamic>? ?? [];
 
-    return {
-      'serviceName': serviceData['serviceName'],
-      'startTime': serviceData['startTime'] as Timestamp,
-      'users': loadedUsers,
-    };
+        final isAssigned = assigned.any(
+          (ref) => ref is DocumentReference && ref.path == userRef.path,
+        );
+        if (!isAssigned) continue;
+
+        final startTimeStr = service['startTime'] ?? '00:00';
+        final timeParts = startTimeStr.split(':');
+
+        // 💡 Sicherstellen, dass Zeit korrekt geparst werden kann
+        if (timeParts.length < 2) continue;
+
+        final fullDateTime = DateTime(
+          parsedDate.year,
+          parsedDate.month,
+          parsedDate.day,
+          int.parse(timeParts[0]) ?? 0,
+          int.parse(timeParts[1]) ?? 0,
+        );
+
+        // 🛡️ Dienste in der Vergangenheit ignorieren
+        if (fullDateTime.isBefore(now)) continue;
+
+        final List<Map<String, dynamic>> loadedUsers = await Future.wait(
+          assigned.map((ref) async {
+            if (ref is DocumentReference) {
+              try {
+                final userDoc = await ref.get();
+                final userData = userDoc.data() as Map<String, dynamic>;
+                return {
+                  'name': userData['displayName'] ?? 'Unbekannt',
+                  'avatar': userData['avatarAssetPath'] ?? '',
+                };
+              } catch (e) {
+                return {'name': 'Unbekannt', 'avatar': ''};
+              }
+            }
+            return {'name': 'Unbekannt', 'avatar': ''};
+          }),
+        );
+
+        matchedServices.add({
+          'serviceName': serviceKey,
+          'startTime': Timestamp.fromDate(fullDateTime),
+          'users': loadedUsers,
+        });
+      }
+
+      // 👉 Nur das nächste Event mit mind. einem passenden Dienst zurückgeben
+      if (matchedServices.isNotEmpty) return matchedServices;
+    }
+
+    return [];
   }
 
   @override
   Widget build(BuildContext context) {
-    if (isTestMode) {
-      return const Placeholder(key: Key('nextServiceCard'));
-    }
-
-    // 👉 Falls Testdaten übergeben wurden
-    if (serviceName != null && startTime != null && users != null) {
-      return _buildWithTitle(_buildCard(serviceName!, startTime!, users!));
-    }
-
-    // 👉 Sonst: Daten aus Firestore laden
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _fetchNextServiceWithUsers(),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _fetchNextServicesFromEvents(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (!snapshot.hasData || snapshot.data == null) {
+
+        final dataList = snapshot.data ?? [];
+        if (dataList.isEmpty) {
           return _buildWithTitle(const Text('Kein nächster Dienst gefunden'));
         }
 
-        final data = snapshot.data!;
         return _buildWithTitle(
-          _buildCard(
-            data['serviceName'] ?? '',
-            data['startTime'] as Timestamp,
-            List<Map<String, dynamic>>.from(data['users'] ?? []),
+          Column(
+            children: dataList.map((data) {
+              return _buildCard(
+                data['serviceName'],
+                data['startTime'],
+                List<Map<String, dynamic>>.from(data['users']),
+              );
+            }).toList(),
           ),
         );
       },
     );
   }
 
-  /// 🧩 Hilfsfunktion, die die Überschrift + Card zusammen zurückgibt
+  /// 🧩 Überschrift + Cards
   Widget _buildWithTitle(Widget card) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +161,7 @@ class NextServiceCard extends StatelessWidget {
     final timeStr = _formatTime(startTime);
 
     return Card(
-      key: const Key('nextServiceCard'),
+      key: Key('nextServiceCard_${serviceName}_$startTime'),
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -165,9 +197,10 @@ class NextServiceCard extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             backgroundImage: avatarUrl.isNotEmpty
-                                ? NetworkImage(avatarUrl)
-                                : const AssetImage('assets/avatar_default.png')
-                                      as ImageProvider,
+                                ? AssetImage(avatarUrl)
+                                : const AssetImage(
+                                    'assets/avatars/avatar_default.png',
+                                  ),
                             radius: 20,
                           ),
                           const SizedBox(height: 4),
