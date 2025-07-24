@@ -43,12 +43,19 @@ class BottomNavBar extends StatelessWidget {
       selectedItemColor: Theme.of(context).primaryColor,
       unselectedItemColor: Colors.grey,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(
-          icon: Icon(Icons.volunteer_activism),
+          icon: Icon(key: Key('homeNavBarIcon'), Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(key: Key('serviceNavBarIcon'), Icons.volunteer_activism),
           label: 'Dienste',
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
+        BottomNavigationBarItem(
+          key: Key('profileNavBarIcon'),
+          icon: Icon(Icons.person),
+          label: 'Profil',
+        ),
       ],
     );
   }

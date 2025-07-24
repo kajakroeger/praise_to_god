@@ -18,7 +18,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  String? firstName;
+  String? displayName;
   bool isLoading = true;
 
   /// 🔁 Daten vom User neu laden
@@ -32,7 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .get();
 
     setState(() {
-      firstName = snapshot.data()?['first_name'] ?? 'Nutzer';
+      displayName = snapshot.data()?['displayName'] ?? 'Nutzer';
       isLoading = false;
     });
   }
@@ -67,7 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Hi $firstName 👋'),
+            Text('Hi $displayName 👋'),
             IconButton(
               icon: const Icon(Icons.logout),
               tooltip: 'Logout',

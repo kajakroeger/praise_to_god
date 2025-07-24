@@ -9,6 +9,8 @@ import 'package:praise_to_god/services/auth_service.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'test_utils.dart';
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late AuthService authService;
@@ -21,35 +23,25 @@ void main() {
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
-
     authService = AuthService();
+  });
+
+  tearDownAll(() async {
+    await signOutTestUser();
   });
 
   group('AuthService Integration (Firebase Dev)', () {
     test('Login mit E-Mail/Passwort', () async {
-      final email = dotenv.env['TEST_USER_EMAIL'];
-      final password = dotenv.env['TEST_USER_PASSWORD'];
+      await signInTestUser();
 
-      expect(email, isNotNull, reason: 'TEST_USER_EMAIL fehlt in .env');
-      expect(password, isNotNull, reason: 'TEST_USER_PASSWORD fehlt in .env');
+      final user = FirebaseAuth.instance.currentUser;
 
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email!, password: password!);
-
-      expect(userCredential.user, isNotNull);
-      expect(userCredential.user?.email, email);
+      expect(user, isNotNull);
+      expect(user?.email, dotenv.env['TEST_USER_EMAIL']);
     });
 
     test('Logout funktioniert korrekt', () async {
-      final email = dotenv.env['TEST_USER_EMAIL']!;
-      final password = dotenv.env['TEST_USER_PASSWORD']!;
-
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      await FirebaseAuth.instance.signOut();
+      await signOutTestUser();
 
       expect(FirebaseAuth.instance.currentUser, isNull);
     });
