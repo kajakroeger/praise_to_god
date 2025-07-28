@@ -1,0 +1,76 @@
+# GitHub Actions Workflow zum automatisierten Bauen & Veröffentlichen der APK
+# Der Workflow wird ausgeführt, wenn etwas auf den Branch dev oder main gepusht wird.
+# Er baut die Flutter-App für Android, wählt den passenden Firebase-Flavor (dev oder prod)
+# und erstellt ein GitHub Release inklusive .apk.
+
+name: Build & Release APK
+
+# Dieser Workflow startet bei jedem Push auf den Branch "dev" oder "main"
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build:
+    # Verwende eine Ubuntu-Umgebung zum Ausführen der Schritte
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Hole den Quellcode aus dem Repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      #️ 2. Installiere Flutter in gewünschter Version
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.13.0'  # Passe ggf. deine Flutter-Version an
+
+      # 3. Installiere alle Abhängigkeiten aus pubspec.yaml
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 4. Wähle die passende Firebase-Konfigurationsdatei je nach Branch
+      #  Die Datei muss im Ordner "android/app/" liegen, sonst schlägt der Build fehl
+      - name: Select correct google-services.json
+        run: |
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            cp firebase/prod/google-services.json android/app/google-services.json
+          else
+            cp firebase/dev/google-services.json android/app/google-services.json
+          fi
+
+      # 5. Tests und Integrationstests ausführen (ohne manuelle Tests)
+      - name: Run Flutter tests (excluding manual)
+        run: flutter test --exclude-tags=manual
+
+      - name: Run Integration Tests (excluding manual)
+        run: flutter test integration_test --exclude-tags=manual
+
+      #️ 5. Baue die APK im Release-Modus
+      - name: Build APK
+        run: flutter build apk --release
+
+      # 6. Erstelle automatisch ein GitHub Release mit dem APK
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          # Der Name des Releases (abhängig vom Branch)
+          name: ${{ github.ref_name == 'main' && 'Production Release' || 'Dev Build' }} ${{ github.run_number }}
+
+          #️ Der Tag-Name für das Release (z.B. "prod-42" oder "dev-42")
+          tag_name: ${{ github.ref_name == 'main' && format('prod-{0}', github.run_number) || format('dev-{0}', github.run_number) }}
+
+          # Release ist öffentlich sichtbar
+          draft: false
+
+          # Markiere nur den "dev"-Branch als Pre-Release
+          prerelease: ${{ github.ref_name != 'main' }}
+
+          # Die gebaute APK-Datei anhängen
+          files: build/app/outputs/flutter-apk/app-release.apk
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:praise_to_god/services/auth_service.dart'; // << Wichtig!
 
 class ServiceScreen extends StatefulWidget {
-  const ServiceScreen({super.key});
+  final AuthService authService;
+
+  ServiceScreen({super.key, AuthService? authService})
+    : authService = authService ?? AuthService(); // Default-Instanz
 
   @override
   State<ServiceScreen> createState() => _ServiceScreenState();
@@ -12,6 +15,8 @@ class ServiceScreen extends StatefulWidget {
 
 class _ServiceScreenState extends State<ServiceScreen> {
   String selectedTeam = 'tech'; // 🔧 Anfangs-Auswahl
+  late AuthService _authService;
+
   final Map<String, String> teamLabels = {
     'tech': 'Technik',
     'worship': 'Worship',
@@ -19,17 +24,54 @@ class _ServiceScreenState extends State<ServiceScreen> {
     'kitchen': 'Küche',
   };
 
-  /// 📦 Dialog zur Ein- oder Austragung
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService;
+  }
+
+  /// 📅 Gibt Monatsnamen zurück
+  String _getMonthName(int month) {
+    const names = [
+      '',
+      'Januar',
+      'Februar',
+      'März',
+      'April',
+      'Mai',
+      'Juni',
+      'Juli',
+      'August',
+      'September',
+      'Oktober',
+      'November',
+      'Dezember',
+    ];
+    return names[month];
+  }
+
+  /// Format wie „13 SO“
+  String _formatDate(DateTime date) {
+    const weekdays = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
+    return '${date.day.toString().padLeft(2, '0')} ${weekdays[date.weekday - 1]}';
+  }
+
+  /// Dialog zur Ein- oder Austragung
   void _handleServiceTap(
     BuildContext context,
     String date,
     String team,
     List<dynamic> assignedRefs,
   ) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _authService.currentUser;
+
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bitte melde dich zuerst an.')),
+        const SnackBar(
+          content: Text(
+            '⚠️ Fehler: Du bist nicht eingeloggt. Bitte kontaktiere den Support',
+          ),
+        ),
       );
       return;
     }
@@ -42,7 +84,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
     );
 
     if (isAssigned) {
-      // 👉 Dialog zum Austragen
       final shouldUnassign = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -74,12 +115,12 @@ class _ServiceScreenState extends State<ServiceScreen> {
           'services.$team.assigned': FieldValue.arrayRemove([userRef]),
         });
 
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Du wurdest ausgetragen.')),
         );
       }
     } else {
-      // 👉 Dialog zum Eintragen
       final shouldAssign = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -115,34 +156,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
       }
     }
 
-    // ⏱️ Refresh der UI nach Ein-/Austragung
     setState(() {});
-  }
-
-  /// 📅 Gibt Monatsnamen zurück
-  String _getMonthName(int month) {
-    const names = [
-      '',
-      'Januar',
-      'Februar',
-      'März',
-      'April',
-      'Mai',
-      'Juni',
-      'Juli',
-      'August',
-      'September',
-      'Oktober',
-      'November',
-      'Dezember',
-    ];
-    return names[month];
-  }
-
-  /// 🗓 Format wie „13 SO“
-  String _formatDate(DateTime date) {
-    const weekdays = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
-    return '${date.day.toString().padLeft(2, '0')} ${weekdays[date.weekday - 1]}';
   }
 
   @override
@@ -155,6 +169,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownButton<String>(
+              key: const Key('teamDropdown'),
               value: selectedTeam,
               isExpanded: true,
               onChanged: (value) {
@@ -173,7 +188,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
             ),
           ),
 
-          // 🔄 Firestore-Daten laden
+          // 🔁 Firestore-Daten laden
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -220,6 +235,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               vertical: 8,
                             ),
                             child: Text(
+                              key: const Key('month'),
                               _getMonthName(date.month),
                               style: const TextStyle(
                                 fontSize: 18,
@@ -227,7 +243,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               ),
                             ),
                           ),
-
                         InkWell(
                           onTap: () => _handleServiceTap(
                             context,

@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:label="PraiseToGod"
+        android:label="${appLabel}"
         android:icon="@mipmap/ic_launcher">
 
         <activity
-            android:name="com.example.praise_to_god.MainActivity"
+            android:name="com.praisetogod.app.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

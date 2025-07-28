@@ -7,42 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:926415037859:android:4d72f03634911ad0072616",
-        "android_client_info": {
-          "package_name": "com.example.glory_to_god"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCc9joiegWr_aswP_RlldMY5bU22aTuxdc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "926415037859-u66g0hispvfftlq2lav5nmf2b8ikqe2d.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "926415037859-n51k5qsl0i1ls308cv37gch08jt23h82.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.gloryToGod"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:926415037859:android:a235311ef6294503072616",
         "android_client_info": {
           "package_name": "com.praisetogod.app.prod"
@@ -75,10 +39,10 @@
               "client_type": 3
             },
             {
-              "client_id": "926415037859-n51k5qsl0i1ls308cv37gch08jt23h82.apps.googleusercontent.com",
+              "client_id": "926415037859-fkggp2i27o1br1k0o5qi1et7ga6jquf9.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.gloryToGod"
+                "bundle_id": "com.example.praiseToGod"
               }
             }
           ]

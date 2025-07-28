@@ -1,4 +1,4 @@
-package com.example.praise_to_god
+package com.praisetogod.app
 
 import io.flutter.embedding.android.FlutterActivity
 

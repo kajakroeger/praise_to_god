@@ -1,10 +1,13 @@
+// E2E-Test, der prüft, ob User sich auf dem Service-Screen zu einem Dienst eintraggen können
+// Der User sollte auf der Karte der verfügbaren Dienst angezeigt werden, sowie im Dashboard in der NextServiceCard
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter/material.dart';
 import 'package:praise_to_god/app.dart';
-import 'package:praise_to_god/firebase_options.dart';
+import 'package:praise_to_god/services/firebase_options.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'test_utils.dart';
@@ -38,13 +41,13 @@ void main() {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle(const Duration(seconds: 5));
 
-        // 🔽 Zum Service-Screen wechseln
+        // Zum Service-Screen wechseln
         final serviceTab = find.byKey(const Key('serviceNavBarIcon'));
         expect(serviceTab, findsOneWidget);
         await tester.tap(serviceTab);
         await tester.pumpAndSettle(const Duration(seconds: 3));
 
-        // 🔍 Finde eine Karte ohne den User (für neue Eintragung)
+        // Finde eine Karte ohne den User (für neue Eintragung)
         final allCards = find.byType(Card);
         expect(allCards, findsWidgets);
 
@@ -96,7 +99,7 @@ void main() {
           reason: 'Datum sollte aus der Karte extrahiert werden',
         );
 
-        // 💬 In verfügbare Karte eintragen
+        // In verfügbare Karte eintragen
         await tester.tap(availableCardFinder!);
         await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -105,29 +108,30 @@ void main() {
         await tester.tap(confirmButton);
         await tester.pumpAndSettle(const Duration(seconds: 5));
 
-        // 🧪 Service-Screen Validierung: User und Avatar sollten jetzt sichtbar sein
+        // Service-Screen Validierung: User und Avatar sollten jetzt sichtbar sein
         expect(find.text(expectedUserName), findsWidgets);
         expect(find.byType(CircleAvatar), findsWidgets);
 
-        // 🏠 Zurück zum Dashboard
+        // Zurück zum Dashboard
         final homeTab = find.byKey(const Key('homeNavBarIcon'));
         expect(homeTab, findsOneWidget);
         await tester.tap(homeTab);
         await tester.pumpAndSettle(const Duration(seconds: 5));
 
-        // 🧪 Dashboard Validierung: NextServiceCard sollte den eingetragenen Dienst anzeigen
+        // 🔍 Dashboard Validierung: Prüfe, ob NextServiceCard den eingetragenen Dienst anzeigt
         expect(
           find.text(expectedUserName),
           findsWidgets,
           reason: 'User-Name sollte auf Dashboard sichtbar sein',
         );
+        //🔍 Prüfe, ob der Avatar ein angezeigt wird
         expect(
           find.byType(CircleAvatar),
           findsWidgets,
           reason: 'Avatar sollte auf Dashboard sichtbar sein',
         );
 
-        // Prüfe dass ein Service-Name angezeigt wird (TECH, WORSHIP, KITCHEN, WELCOME)
+        // 🔍 Prüfe, ob der Service-Name angezeigt wird
         final serviceNames = ['TECH', 'WORSHIP', 'KITCHEN', 'WELCOME'];
         bool serviceFound = false;
         for (final serviceName in serviceNames) {

@@ -6,30 +6,20 @@ import 'services/auth_gate.dart';
 import 'screens/service.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // 🔥 `isTestMode` entfernt
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final router = GoRouter(
       initialLocation: '/',
       routes: [
-        // AuthGate entscheidet über Login oder Weiterleitung
         GoRoute(path: '/', builder: (context, state) => const AuthGate()),
-
-        // Dashboard (geschützte Route)
         GoRoute(
           path: '/dashboard',
           builder: (context, state) => const DashboardScreen(),
         ),
-
-        // Login manuell erreichbar (falls nötig)
         GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
-
-        // Weiterleitung zum ServiceScreen
-        GoRoute(
-          path: '/service',
-          builder: (context, state) => const ServiceScreen(),
-        ),
+        GoRoute(path: '/service', builder: (context, state) => ServiceScreen()),
       ],
     );
 
@@ -37,6 +27,76 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'PraiseToGod',
       routerConfig: router,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: const Color(0xFF00254c),
+
+        // AppBar-Theme
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.black),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        // ✅ CardTheme korrekt verwendet
+        cardTheme: const CardThemeData(
+          color: Colors.white,
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          margin: EdgeInsets.all(12),
+        ),
+
+        // BottomNavigationBar
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.white,
+          selectedItemColor: Colors.deepPurple,
+          unselectedItemColor: Colors.grey,
+        ),
+
+        dialogTheme: const DialogThemeData(
+          backgroundColor: Colors.white,
+          elevation: 6,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+          contentTextStyle: TextStyle(color: Colors.black87, fontSize: 16),
+        ),
+
+        // ElevatedButton
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF27bac2), // Hintergrund
+            foregroundColor: Colors.white, // Textfarbe
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+
+        // 🔵 TextButton (z. B. für "Abbrechen")
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: const Color(0xFF00254C), // Textfarbe
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

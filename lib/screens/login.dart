@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:praise_to_god/services/auth_service.dart';
+import '../flavor_config.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthService? authServiceOverride;
@@ -23,6 +24,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     authService = widget.authServiceOverride ?? AuthService();
+  }
+
+  // Helper-Methode um sicher auf FlavorConfig zuzugreifen
+  bool get _isDevEnvironment {
+    try {
+      return FlavorConfig.instance.flavor == Flavor.dev;
+    } catch (e) {
+      // Fallback für Tests oder uninitialisierte FlavorConfig
+      return false;
+    }
   }
 
   // 🧠 Funktion zum Einloggen mit E-Mail & Passwort
@@ -59,15 +70,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundImage: AssetImage('assets/logo-platzhalter.jpg'),
                 ),
 
-                // ✅ Hinweis für dev-Umgebung
-                const Text(
-                  'PraiseToGod (dev)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
+                // ✅ Hinweis für dev-Umgebung (mit sicherem Zugriff)
+                if (_isDevEnvironment)
+                  Text(
+                    'PraiseToGod (dev)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF00254c),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
 
                 const SizedBox(height: 24),
                 const Text(

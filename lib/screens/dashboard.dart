@@ -6,8 +6,6 @@ import 'package:praise_to_god/components/next_service_card.dart';
 import 'package:praise_to_god/components/bottom_nav_bar.dart';
 import 'package:praise_to_god/services/auth_service.dart';
 
-import '../components/generate_events.dart';
-
 class DashboardScreen extends StatefulWidget {
   final bool isTestMode;
 
@@ -87,29 +85,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 : const NextServiceCard(),
 
             const SizedBox(height: 24),
-
-            ElevatedButton.icon(
-              key: const Key('generateEventsButton'),
-              icon: const Icon(Icons.event),
-              label: const Text('Sonntagsgottesdienste generieren'),
-              onPressed: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Erstelle Events...')),
-                );
-                try {
-                  await generateSundayServices(); // <-- aus deiner event_generator.dart
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Events erfolgreich erstellt!'),
-                    ),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Fehler: $e')));
-                }
-              },
-            ),
           ],
         ),
       ),
