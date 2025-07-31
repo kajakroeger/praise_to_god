@@ -48,11 +48,7 @@ jobs:
 
       #️ 6. Baue die APK im Release-Modus
       - name: Build APK
-        run: flutter build apk --release
-
-      - name: Show APK files
-        if: failure()
-        run: ls -R build/app/outputs/flutter-apk || true
+        run: flutter build apk --flavor ${{ github.ref_name == 'main' && 'prod' || 'dev' }} --release
 
       # 7. Erstelle automatisch ein GitHub Release mit dem APK
       - name: Create GitHub Release
@@ -71,7 +67,7 @@ jobs:
           prerelease: ${{ github.ref_name != 'main' }}
 
           # Die gebaute APK-Datei anhängen
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: build/app/outputs/flutter-apk/app-${{ github.ref_name == 'main' && 'prod' || 'dev' }}-release.apk
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
