@@ -43,11 +43,11 @@ jobs:
           fi
 
       # 5. Tests und Integrationstests ausführen (ohne manuelle Tests)
+      - name: Create .env file from secret
+        run: echo "${{ secrets.TEST_USER }}" > .env
+
       - name: Run Integration Tests (excluding manual)
         run: flutter test integration_test --exclude-tags=manual
-        env:
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
       #️ 6. Baue die APK im Release-Modus
       - name: Build APK
