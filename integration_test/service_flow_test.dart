@@ -38,7 +38,7 @@ void main() {
   });
 
   group('Service Flow E2E', () {
-    const expectedUserName = 'Samuel';
+    const expectedUserName = 'Kaja';
 
     testWidgets(
       'User kann sich für einen Dienst eintragen und es wird korrekt angezeigt',

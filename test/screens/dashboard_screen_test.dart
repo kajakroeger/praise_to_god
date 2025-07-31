@@ -18,6 +18,6 @@ void main() {
     expect(find.byKey(const Key('nextServiceCard')), findsOneWidget);
 
     // Prüfe, ob BottomMenuBar vorhanden ist
-    expect(find.byKey(const Key('bottomMenuBar')), findsOneWidget);
+    expect(find.byKey(const Key('bottomNavBar')), findsOneWidget);
   });
 }
