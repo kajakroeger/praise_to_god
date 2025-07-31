@@ -12,6 +12,9 @@ on:
       - dev
       - main
 
+permissions:
+  contents: write # erlaubt das Erstellen von Releases
+
 jobs:
   build:
     # Verwende eine Ubuntu-Umgebung zum Ausführen der Schritte
