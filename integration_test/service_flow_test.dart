@@ -57,12 +57,11 @@ void main() {
         for (int i = 0; i < allCards.evaluate().length; i++) {
           final cardFinder = allCards.at(i);
 
-          // Prüfe ob diese Karte NICHT den User enthält
           final userInCard = find.descendant(
             of: cardFinder,
             matching: find.text(expectedUserName),
           );
-
+          // Suche eine Karte, auf der der User noch NICHT eingetragen ist
           if (userInCard.evaluate().isEmpty) {
             availableCardFinder = cardFinder;
 
@@ -118,20 +117,18 @@ void main() {
         await tester.tap(homeTab);
         await tester.pumpAndSettle(const Duration(seconds: 5));
 
-        // 🔍 Dashboard Validierung: Prüfe, ob NextServiceCard den eingetragenen Dienst anzeigt
         expect(
           find.text(expectedUserName),
           findsWidgets,
           reason: 'User-Name sollte auf Dashboard sichtbar sein',
         );
-        //🔍 Prüfe, ob der Avatar ein angezeigt wird
         expect(
           find.byType(CircleAvatar),
           findsWidgets,
           reason: 'Avatar sollte auf Dashboard sichtbar sein',
         );
 
-        // 🔍 Prüfe, ob der Service-Name angezeigt wird
+        // Prüfe, ob der Service-Name angezeigt wird
         final serviceNames = ['TECH', 'WORSHIP', 'KITCHEN', 'WELCOME'];
         bool serviceFound = false;
         for (final serviceName in serviceNames) {

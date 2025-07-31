@@ -1,3 +1,9 @@
+// Testet:
+//    den Login via E-Mail und Passwort
+//    das Logout-Verhalten
+//    und (optional/manuell) den Google-Login
+
+// Dieser Test muss manuelle ausgeführt werden, weil Google-Login User-Interaktion erfordert
 @Tags(['manual'])
 library;
 
@@ -12,12 +18,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'test_utils.dart';
 
 void main() {
+  // Initialisiert das Integrationstest-Framework
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late AuthService authService;
 
   setUpAll(() async {
     await dotenv.load(fileName: '.env');
 
+    // Firebase initialisieren, wenn es noch nicht initialisiert wurde
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -26,6 +34,7 @@ void main() {
     authService = AuthService();
   });
 
+  // Clean-up nach allen Tests
   tearDownAll(() async {
     await signOutTestUser();
   });
