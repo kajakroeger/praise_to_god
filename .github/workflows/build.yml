@@ -37,9 +37,9 @@ jobs:
       - name: Select correct google-services.json
         run: |
           if [ "${{ github.ref_name }}" == "main" ]; then
-              cp src/prod/google-services.json android/app/google-services.json
+              cp android/app/src/prod/google-services.json android/app/google-services.json
           else
-              cp src/dev/google-services.json android/app/google-services.json
+              cp android/app/src/dev/google-services.json android/app/google-services.json
           fi
 
       # 5. Tests und Integrationstests ausführen (ohne manuelle Tests)
