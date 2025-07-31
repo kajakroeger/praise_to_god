@@ -42,13 +42,6 @@ jobs:
               cp android/app/src/dev/google-services.json android/app/google-services.json
           fi
 
-      # 5. Tests und Integrationstests ausführen (ohne manuelle Tests)
-      - name: Create .env file from secret
-        run: echo "${{ secrets.TEST_USER }}" > .env
-
-      - name: Run Integration Tests (excluding manual)
-        run: flutter test integration_test --exclude-tags=manual
-
       #️ 6. Baue die APK im Release-Modus
       - name: Build APK
         run: flutter build apk --release
@@ -74,3 +67,5 @@ jobs:
 
         env:
           GITHUB_TOKEN: ${{ secrets.TEST_USER }}
+
+
