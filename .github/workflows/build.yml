@@ -28,8 +28,12 @@ jobs:
         with:
           flutter-version: '3.32.6'
 
-      # 3. Installiere alle Abhängigkeiten aus pubspec.yaml
-      - name: Install dependenciesS
+      # 3. Erstelle .env-Datei aus Secret
+      - name: Create .env file from secret
+        run: echo "${{ secrets.TEST_USER }}" > .env
+
+      # 4. Installiere alle Abhängigkeiten aus pubspec.yaml
+      - name: Install dependencies
         run: flutter pub get
 
       # 4. Wähle die passende Firebase-Konfigurationsdatei je nach Branch
@@ -42,13 +46,13 @@ jobs:
               cp android/app/src/dev/google-services.json android/app/google-services.json
           fi
 
-      # 5. Tests und Integrationstests ausführen (ohne manuelle Tests)
-      - name: Create .env file from secret
-        run: echo "${{ secrets.TEST_USER }}" > .env
-
       #️ 6. Baue die APK im Release-Modus
       - name: Build APK
         run: flutter build apk --release
+
+      - name: Show APK files
+        if: failure()
+        run: ls -R build/app/outputs/flutter-apk || true
 
       # 7. Erstelle automatisch ein GitHub Release mit dem APK
       - name: Create GitHub Release
@@ -70,6 +74,6 @@ jobs:
           files: build/app/outputs/flutter-apk/app-release.apk
 
         env:
-          GITHUB_TOKEN: ${{ secrets.TEST_USER }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
