@@ -1,28 +1,27 @@
-// next_service_card.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+/// Komponente zur Anzeige des nächsten eingetragenen Dienstes
 class NextServiceCard extends StatelessWidget {
   const NextServiceCard({super.key});
 
-  /// 🗓 Datum formatieren (z. B. „Sonntag, 20.07“)
+  /// Datum formatieren (z.B. „Sonntag, 20.07“)
   String _formatDate(Timestamp timestamp) {
     final date = timestamp.toDate();
     final formatter = DateFormat('EEEE, dd.MM', 'de_DE');
     return formatter.format(date);
   }
 
-  /// 🕑 Zeit formatieren (z. B. „10:00“)
+  /// Zeit formatieren (z.B. „10:00“)
   String _formatTime(Timestamp timestamp) {
     final date = timestamp.toDate();
     final formatter = DateFormat.Hm('de_DE');
     return formatter.format(date);
   }
 
-  /// 🔄 Dienst-Daten aus Firestore laden
+  /// Dienst-Daten aus Firestore laden
   Future<List<Map<String, dynamic>>> _fetchNextServicesFromEvents() async {
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) return [];
@@ -61,7 +60,7 @@ class NextServiceCard extends StatelessWidget {
         final startTimeStr = service['startTime'] ?? '00:00';
         final timeParts = startTimeStr.split(':');
 
-        // 💡 Sicherstellen, dass Zeit korrekt geparst werden kann
+        // Sicherstellen, dass Zeit korrekt geparst werden kann
         if (timeParts.length < 2) continue;
 
         final fullDateTime = DateTime(
@@ -100,7 +99,7 @@ class NextServiceCard extends StatelessWidget {
         });
       }
 
-      // 👉 Nur das nächste Event mit mind. einem passenden Dienst zurückgeben
+      // Nur das nächste Event mit mind. einem passenden Dienst zurückgeben
       if (matchedServices.isNotEmpty) return matchedServices;
     }
 
@@ -136,7 +135,7 @@ class NextServiceCard extends StatelessWidget {
     );
   }
 
-  /// 🧩 Überschrift + Cards
+  /// Überschrift + Cards
   Widget _buildWithTitle(Widget card) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +152,7 @@ class NextServiceCard extends StatelessWidget {
     );
   }
 
-  /// 🧾 Dienst-Karte mit Datum, Uhrzeit & Avataren
+  /// Dienst-Karte mit Datum, Uhrzeit & Avataren
   Widget _buildCard(
     String serviceName,
     Timestamp startTime,

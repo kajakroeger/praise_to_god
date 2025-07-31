@@ -19,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? displayName;
   bool isLoading = true;
 
-  /// 🔁 Daten vom User neu laden
+  /// Daten vom User neu laden
   Future<void> _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
@@ -35,7 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  /// 🚪 Logout-Funktion
+  /// Logout-Funktion
   Future<void> _logout(BuildContext context) async {
     await AuthService().signOut();
     if (context.mounted) {
@@ -75,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: _loadUserData, // 👈 beim Wischen nach unten neu laden
+        onRefresh: _loadUserData, // beim Wischen nach unten neu laden
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -88,10 +88,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavBar(
-        key: Key('bottomMenuBar'),
-        currentRoute: '/dashboard',
-      ),
+      bottomNavigationBar: const BottomNavBar(currentRoute: '/dashboard'),
     );
   }
 }

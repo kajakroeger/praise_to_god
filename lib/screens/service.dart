@@ -1,9 +1,11 @@
-// service.dart
+// Der ServiceScreen zeigt eine Liste von Diensten für ausgewählte Teams.
+// Nutzer:innen können sich per Dialog in einen Dienst ein- oder austragen.
+// Daten werden aus Firestore geladen und dynamisch angezeigt.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav_bar.dart';
-import 'package:praise_to_god/services/auth_service.dart'; // << Wichtig!
+import 'package:praise_to_god/services/auth_service.dart';
 
 class ServiceScreen extends StatefulWidget {
   final AuthService authService;
@@ -16,7 +18,7 @@ class ServiceScreen extends StatefulWidget {
 }
 
 class _ServiceScreenState extends State<ServiceScreen> {
-  String selectedTeam = 'tech'; // 🔧 Anfangs-Auswahl
+  String selectedTeam = 'tech'; // Anfangs-Auswahl
   late AuthService _authService;
 
   final Map<String, String> teamLabels = {
@@ -32,7 +34,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
     _authService = widget.authService;
   }
 
-  /// 📅 Gibt Monatsnamen zurück
+  /// Gibt Monatsnamen zurück
   String _getMonthName(int month) {
     const names = [
       '',
@@ -59,6 +61,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
   }
 
   /// Dialog zur Ein- oder Austragung
+  /// - Prüft, ob Nutzer schon zugewiesen ist
+  /// - Zeigt passenden Dialog (eintragen / austragen)
+  /// - Aktualisiert Firestore und zeigt Feedback
   void _handleServiceTap(
     BuildContext context,
     String date,
@@ -190,7 +195,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
             ),
           ),
 
-          // 🔁 Firestore-Daten laden
+          // 🔁 StreamBuilder: Lädt und aktualisiert Diensttermine in Echtzeit aus Firestore
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -210,6 +215,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
 
                 final docs = snapshot.data!.docs;
 
+                // Liste der Termine für das gewählte Team
+                // Pro Termin wird ein Card-Widget angezeigt
                 return ListView.builder(
                   key: const Key('serviceList'),
                   itemCount: docs.length,
@@ -223,6 +230,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                     final assigned =
                         serviceData['assigned'] as List<dynamic>? ?? [];
 
+                    // Header mit Monatsnamen (z.B. "Mai") für Monatswechsel
                     final bool showMonthHeader =
                         index == 0 ||
                         date.month != DateTime.parse(docs[index - 1].id).month;
@@ -245,6 +253,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               ),
                             ),
                           ),
+
+                        // Dienst-Karte mit Datum, Uhrzeit und Teilnehmer:innen
+                        // Beim Tippen wird Dialog zur Ein-/Austragung geöffnet
                         InkWell(
                           onTap: () => _handleServiceTap(
                             context,
@@ -293,6 +304,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     if (assigned.isNotEmpty)
+                                      // 👤 Zeigt Teilnehmer:innen als Chips mit Name + Avatar
+                                      // Daten werden aus Firestore geladen (über DocumentReference)
                                       Wrap(
                                         spacing: 8,
                                         runSpacing: 4,

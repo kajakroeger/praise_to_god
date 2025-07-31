@@ -1,9 +1,10 @@
-// Testet:
-//    den Login via E-Mail und Passwort
-//    das Logout-Verhalten
-//    und (optional/manuell) den Google-Login
+// Der Test prüft, ob die Anmeldungsmethoden E-Mail & Passwort sowie Google Login.
+// Konkret wird getestet,
+// ob registrierte User sich mit E-Mail und Passwort anmelden können,
+// ob sich registrierte User über den Logout Button abmelden können,
+// ob sich registrierte User über den Google-Login Button anmelden können.
 
-// Dieser Test muss manuelle ausgeführt werden, weil Google-Login User-Interaktion erfordert
+// Dieser Test muss manuell ausgeführt werden, weil Google-Login User-Interaktion erfordert
 @Tags(['manual'])
 library;
 

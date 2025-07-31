@@ -15,18 +15,18 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late final AuthService authService;
 
-  // 🔐 Controller für E-Mail und Passwort
+  // Controller für E-Mail und Passwort
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // 🔄 Wird bei Widget-Erstellung einmalig ausgeführt
+  // Wird bei Widget-Erstellung einmalig ausgeführt und initialisiert den AuthService
   @override
   void initState() {
     super.initState();
     authService = widget.authServiceOverride ?? AuthService();
   }
 
-  // Helper-Methode um sicher auf FlavorConfig zuzugreifen
+  // Prüft, ob sich die App im Dev-Modus befindet (über FlavorConfig)
   bool get _isDevEnvironment {
     try {
       return FlavorConfig.instance.flavor == Flavor.dev;
@@ -36,20 +36,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // 🧠 Funktion zum Einloggen mit E-Mail & Passwort
+  // Funktion zum Einloggen mit E-Mail & Passwort
   Future<void> _loginWithEmailPassword() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
     try {
-      // 📞 Aufruf der AuthService-Login-Methode
       await authService.signInWithEmailPassword(email, password);
 
-      // ✅ Erfolgreich eingeloggt → Route wechseln
+      // Erfolgreich eingeloggt → Weiterleitung zum Dashboard
       if (!mounted) return;
       context.go('/dashboard');
     } catch (e) {
-      // ❌ Fehler anzeigen
+      // Bei Fehler: Snackbar mit Fehlermeldung
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Login fehlgeschlagen: $e')));
@@ -70,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   backgroundImage: AssetImage('assets/logo-platzhalter.jpg'),
                 ),
 
-                // ✅ Hinweis für dev-Umgebung (mit sicherem Zugriff)
+                // Hinweis, wenn App in Dev-Umgebung gestartet ist
                 if (_isDevEnvironment)
                   Text(
                     'PraiseToGod (dev)',
@@ -107,14 +106,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                // 🔘 Login-Button
+                // Login-Button
                 ElevatedButton(
                   key: const Key('login_button'),
                   onPressed: _loginWithEmailPassword,
                   child: const Text('Anmelden'),
                 ),
 
-                // 🔁 Passwort vergessen
+                // Passwort vergessen
                 TextButton(
                   key: const Key('forgot_password_button'),
                   onPressed: () {
@@ -125,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                // 🔘 Google Login
+                // Google Login
                 ElevatedButton(
                   key: const Key('google_login_button'),
                   onPressed: () async {

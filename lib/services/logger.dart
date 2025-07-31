@@ -1,3 +1,6 @@
+// Stellt eine zentrale Logger-Instanz bereit, die für Debug-Ausgaben im Terminal genutzt werden kann.
+// Der Logger verwendet Farben, Emojis und Zeitstempeln
+
 import 'package:logger/logger.dart';
 
 final logger = Logger(
@@ -8,6 +11,6 @@ final logger = Logger(
     lineLength: 80,
     colors: true,
     printEmojis: true,
-    printTime: true, // true, um Zeitstempel zu sehen
+    dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
   ),
 );

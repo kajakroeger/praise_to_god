@@ -16,7 +16,7 @@ Future<void> initializeTestEnvironment() async {
   }
 }
 
-/// Meldet Testnutzer mit E-Mail/Passwort anmelden
+/// Meldet Testnutzer mit E-Mail/Passwort an
 Future<void> signInTestUser() async {
   final email = dotenv.env['TEST_USER_EMAIL'];
   final password = dotenv.env['TEST_USER_PASSWORD'];
@@ -32,7 +32,7 @@ Future<void> signInTestUser() async {
   );
 }
 
-/// 🔧 Setup: Weist den aktuellen User einem zukünftigen Service zu
+/// Setup: Weist den aktuellen User einem zukünftigen Service zu
 Future<Map<String, dynamic>?> setupTestServiceAssignment() async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) return null;
@@ -94,7 +94,7 @@ Future<Map<String, dynamic>?> setupTestServiceAssignment() async {
   return null;
 }
 
-/// 🧹 Cleanup: Entfernt Test-Zuweisungen
+/// Cleanup: Entfernt Test-Zuweisungen
 Future<void> cleanupTestServiceAssignment(
   String docId,
   String serviceName,
@@ -196,7 +196,7 @@ Future<Map<String, dynamic>?> getAssignedServiceInfoForCurrentUser() async {
   return null;
 }
 
-/// 🚪 Meldet den Testnutzer ab
+/// Meldet den Testnutzer ab
 Future<void> signOutTestUser() async {
   await FirebaseAuth.instance.signOut();
 }

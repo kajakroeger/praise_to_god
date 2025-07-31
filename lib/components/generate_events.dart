@@ -1,7 +1,9 @@
+// Hilfskomponente zum Erstellen von wiederkehrenden Events, wie Sonntags-Gottesdienste
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-/// 🔁 Erstellt Sonntag-Gottesdienste für 3 Monate (ab heute)
+/// Erstellt Sonntag-Gottesdienste für 3 Monate (ab heute)
 Future<void> generateSundayServices() async {
   final firestore = FirebaseFirestore.instance;
 
@@ -12,7 +14,7 @@ Future<void> generateSundayServices() async {
 
   for (final date in sundays) {
     final formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    print('📆 Prüfe Datum: $formattedDate');
+    print('Prüfe Datum: $formattedDate');
 
     final docRef = firestore
         .collection('events')
@@ -40,7 +42,7 @@ Future<void> generateSundayServices() async {
   }
 }
 
-/// 📅 Gibt alle Sonntage zwischen [start] und [end] zurück
+/// Gibt alle Sonntage zwischen [start] und [end] zurück
 List<DateTime> _getSundaysBetween(DateTime start, DateTime end) {
   final List<DateTime> sundays = [];
   DateTime current = start;

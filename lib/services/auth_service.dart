@@ -12,12 +12,14 @@ class AuthService {
       _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   /// Erstellt das Nutzer-Dokument, falls es noch nicht existiert
-  /// Vorname aus displayName extrahieren (nur erstes Wort)
+  /// Gibt den Vornamen aus displayName extrahieren (nur erstes Wort)
   String extractFirstName(String? displayName) {
     if (displayName == null || displayName.isEmpty) return 'Unbekannt';
     return displayName.split(' ').first;
   }
 
+  /// Stellt sicher, dass ein User-Dokument im Firestore existiert
+  /// Falls es noch nicht da ist, wird es mit Basisdaten angelegt
   Future<void> ensureUserDocumentExists(User user) async {
     final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
     final snapshot = await docRef.get();
@@ -31,7 +33,7 @@ class AuthService {
     }
   }
 
-  /// 🔐 Login mit Google
+  /// Login mit Google
   Future<UserCredential?> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
     if (googleUser == null) return null;
@@ -44,13 +46,13 @@ class AuthService {
 
     final userCredential = await _auth.signInWithCredential(credential);
 
-    // ✅ Nutzer-Dokument prüfen/anlegen
+    // Sicherstellen, dass Nutzer-Daten im Firestore vorhanden sind
     await ensureUserDocumentExists(userCredential.user!);
 
     return userCredential;
   }
 
-  /// 🔐 Login mit E-Mail & Passwort
+  /// Login mit E-Mail & Passwort
   Future<UserCredential> signInWithEmailPassword(
     String email,
     String password,
@@ -60,22 +62,22 @@ class AuthService {
       password: password,
     );
 
-    // ✅ Nutzer-Dokument prüfen/anlegen
+    // Sicherstellen, dass Nutzer-Daten im Firestore vorhanden sind
     await ensureUserDocumentExists(userCredential.user!);
 
     return userCredential;
   }
 
-  /// 🚪 Logout
+  /// Logout aus Firebase + Google Sign-In
   Future<void> signOut() async {
     await _auth.signOut();
     await _googleSignIn.signOut();
   }
 
-  /// 👤 Aktueller User
+  /// Zugriff auf den aktuell eingeloggten Nutzer
   User? get currentUser => _auth.currentUser;
 
-  // Statische Methode für Tests
+  // Statische Hilfsmethode für Tests mit eigenen Auth-Instanzen
   static AuthService forTest({
     required FirebaseAuth auth,
     required GoogleSignIn googleSignIn,

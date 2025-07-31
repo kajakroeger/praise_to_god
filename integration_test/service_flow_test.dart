@@ -1,5 +1,8 @@
-// E2E-Test, der prüft, ob User sich auf dem Service-Screen zu einem Dienst eintraggen können
-// Der User sollte auf der Karte der verfügbaren Dienst angezeigt werden, sowie im Dashboard in der NextServiceCard
+// Der Test  prüft, ob User sich auf dem Service-Screen zu einem Dienst eintragen können.
+// Konkret wird getestet,
+// ob der User nach dem Eintragen zum ausgewählten Termin angezeigt wird,
+// ob die Navigation zwischen Dashboard und Service Screen funktioniert,
+// ob ein nächster Dienst im Dashboard mit Username, Avatar und Servicename angezeigt wird
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -19,6 +22,7 @@ void main() {
     await dotenv.load(fileName: '.env');
     await initializeDateFormatting('de_DE', null);
 
+    // Firebase initialisieren, wenn es noch nicht initialisiert wurde
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
@@ -28,12 +32,13 @@ void main() {
     await signInTestUser();
   });
 
+  // Clean-up nach allen Tests
   tearDownAll(() async {
     await signOutTestUser();
   });
 
   group('Service Flow E2E', () {
-    const expectedUserName = 'Kaja';
+    const expectedUserName = 'Samuel';
 
     testWidgets(
       'User kann sich für einen Dienst eintragen und es wird korrekt angezeigt',
@@ -61,7 +66,6 @@ void main() {
             of: cardFinder,
             matching: find.text(expectedUserName),
           );
-          // Suche eine Karte, auf der der User noch NICHT eingetragen ist
           if (userInCard.evaluate().isEmpty) {
             availableCardFinder = cardFinder;
 
@@ -120,27 +124,25 @@ void main() {
         expect(
           find.text(expectedUserName),
           findsWidgets,
-          reason: 'User-Name sollte auf Dashboard sichtbar sein',
+          reason: 'User-Name sollte auf dem Dashboard sichtbar sein',
         );
         expect(
           find.byType(CircleAvatar),
           findsWidgets,
-          reason: 'Avatar sollte auf Dashboard sichtbar sein',
+          reason: 'Ein Avatar sollte auf dem Dashboard sichtbar sein',
         );
 
-        // Prüfe, ob der Service-Name angezeigt wird
-        final serviceNames = ['TECH', 'WORSHIP', 'KITCHEN', 'WELCOME'];
-        bool serviceFound = false;
-        for (final serviceName in serviceNames) {
-          if (find.textContaining(serviceName).evaluate().isNotEmpty) {
-            serviceFound = true;
-            break;
-          }
-        }
         expect(
-          serviceFound,
-          isTrue,
-          reason: 'Ein Service-Name sollte auf Dashboard angezeigt werden',
+          find.byKey(const Key('serviceName')),
+          findsWidgets,
+          reason:
+              'Ein Service Name sollte auf der NextServiceCard sichtbar sein',
+        );
+
+        expect(
+          find.byKey(const Key('startTime')),
+          findsWidgets,
+          reason: 'Ein Datum sollte auf der NextServiceCard sichtbar sein',
         );
 
         // ignore: avoid_print

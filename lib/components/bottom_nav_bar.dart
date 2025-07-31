@@ -37,6 +37,7 @@ class BottomNavBar extends StatelessWidget {
     final selectedIndex = _getSelectedIndex();
 
     return BottomNavigationBar(
+      key: const Key('BottomNavBar'),
       currentIndex: selectedIndex,
       onTap: (index) => _onItemTapped(index, context),
       type: BottomNavigationBarType.fixed,

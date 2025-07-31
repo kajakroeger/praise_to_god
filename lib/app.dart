@@ -1,3 +1,12 @@
+// Einstiegspunkt der App-Konfiguration für PraiseToGod.
+//
+// Diese Datei definiert:
+//    Die Navigationsstruktur (GoRouter)
+//    Die globalen Design-Themes (Farben, Buttons, Karten)
+//    Den Startpunkt der App (AuthGate – prüft Login-Zustand)
+//
+// Alle Screens wie Login, Dashboard und Dienste sind hier eingebunden.
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/login.dart';
@@ -13,6 +22,7 @@ class MyApp extends StatelessWidget {
     final router = GoRouter(
       initialLocation: '/',
       routes: [
+        // AuthGate: entscheidet basierend auf Login-Zustand
         GoRoute(path: '/', builder: (context, state) => const AuthGate()),
         GoRoute(
           path: '/dashboard',
@@ -27,11 +37,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'PraiseToGod',
       routerConfig: router,
+
+      // Globales Theme
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         primaryColor: const Color(0xFF00254c),
 
-        // AppBar-Theme
+        // AppBar Design
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
@@ -43,7 +55,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-        // ✅ CardTheme korrekt verwendet
+        // Card Design
         cardTheme: const CardThemeData(
           color: Colors.white,
           elevation: 4,
@@ -53,13 +65,14 @@ class MyApp extends StatelessWidget {
           margin: EdgeInsets.all(12),
         ),
 
-        // BottomNavigationBar
+        // BottomNavigationBar Design
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
           selectedItemColor: Colors.deepPurple,
           unselectedItemColor: Colors.grey,
         ),
 
+        // Dialogfenster Design
         dialogTheme: const DialogThemeData(
           backgroundColor: Colors.white,
           elevation: 6,
@@ -74,7 +87,7 @@ class MyApp extends StatelessWidget {
           contentTextStyle: TextStyle(color: Colors.black87, fontSize: 16),
         ),
 
-        // ElevatedButton
+        // ElevatedButton Design
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF27bac2), // Hintergrund
@@ -86,7 +99,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
 
-        // 🔵 TextButton (z. B. für "Abbrechen")
+        // TextButton Design
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: const Color(0xFF00254C), // Textfarbe

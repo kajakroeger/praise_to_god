@@ -1,3 +1,9 @@
+// Stellt sicher, dass die wesentlichen UI-Elemente auf der Login-Seite vorhanden sind
+// E-Mail- und Passwort-Eingabefeld
+// Login-Button
+// Passwort vergessen Button
+// Google-Login-Button
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -6,6 +12,7 @@ import 'package:praise_to_god/screens/login.dart';
 import 'package:praise_to_god/services/auth_service.dart';
 import 'package:praise_to_god/flavor_config.dart';
 
+// Erstellt einen Mock von AuthService, damit kein echter Login mit Firebase stattfindet.
 class MockAuthService extends Mock implements AuthService {}
 
 void main() {
@@ -15,11 +22,11 @@ void main() {
     mockAuthService = MockAuthService();
   });
 
-  // Test für beide Flavors durchlaufen lassen
+  // Führt die UI-Tests für beide Umgebungen (dev und prod) separat aus.
   for (final flavor in Flavor.values) {
     group('LoginScreen UI-Tests – Flavor: $flavor', () {
       setUp(() {
-        // FlavorConfig setzen für dev oder prod
+        // Initialisiert den FlavorConfig je nach dev oder prod
         if (flavor == Flavor.dev) {
           FlavorConfig.initialize(
             flavor: Flavor.dev,
@@ -43,6 +50,7 @@ void main() {
         tester,
       ) async {
         await tester.pumpWidget(
+          //Lädt den LoginScreen mit dem gemockten AuthService – keine echten Firebase-Aufrufe.
           MaterialApp(home: LoginScreen(authServiceOverride: mockAuthService)),
         );
 

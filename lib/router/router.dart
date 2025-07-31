@@ -15,7 +15,6 @@ final GoRouter appRouter = GoRouter(
   // Startseite
   initialLocation: '/',
 
-  // Routing-Logik basierend auf Login-Zustand
   redirect: (context, state) {
     // 🚫 Verhindere Redirects solange Auth noch nicht initialisiert ist
     if (!authStateNotifier.isInitialized) return null;

@@ -1,11 +1,21 @@
+// Konfiguration für App-Flavors wie „dev“ (Entwicklung) und „prod“ (Produktion).
+// Diese Datei ermöglicht es, Umgebungs-spezifische Einstellungen zu definieren,
+// z.B. verschiedene API-URLs oder visuelle Hinweise.
+//
+// Verwendung:
+// In der Dev-Version ein Banner anzeigen („Dev“)
+// In der Prod-Version echte Datenbank verwenden
+
 enum Flavor { dev, prod }
 
+// Werte, die je Flavor unterschiedlich sein können
 class FlavorValues {
   final String baseUrl;
 
   const FlavorValues({required this.baseUrl});
 }
 
+// Hauptkonfiguration für den aktuellen Flavor
 class FlavorConfig {
   static late FlavorConfig _instance;
 
@@ -25,6 +35,7 @@ class FlavorConfig {
     this.color = 0xFF00BFA5,
   });
 
+  // Initialisierung – wird beim App-Start aufgerufen
   static void initialize({
     required Flavor flavor,
     required String name,
